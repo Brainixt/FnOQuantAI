@@ -160,7 +160,7 @@ class RiskManager:
         max_pct_allowed = config.MAX_PRICE_DEVIATION_PERCENT
         max_ticks_allowed = config.MAX_PRICE_DEVIATION_TICKS
 
-        if dev_percentage > max_pct_allowed and dev_ticks > max_ticks_allowed:
+        if dev_percentage > max_pct_allowed or dev_ticks > max_ticks_allowed:
             cls.log_risk_event(
                 event_type="PRICE_DEVIATION_EXCEEDED",
                 symbol=symbol,

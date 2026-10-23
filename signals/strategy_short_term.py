@@ -63,8 +63,8 @@ class ShortTermStrategy:
             else:
                 expiry_date = None
 
-            if expiry_date and (expiry_date - today).days <= 2:
-                log.debug(f"[{cls.CATEGORY}] Rejected {latest_snapshot.get('symbol')}: Expiry {expiry_date} is too close (<= 2 days).")
+            if expiry_date and (expiry_date - today).days <= 1:
+                log.debug(f"[{cls.CATEGORY}] Rejected {latest_snapshot.get('symbol')}: Expiry {expiry_date} is too close (<= 1 day).")
                 return None
 
         # 1. Extract Features
@@ -83,12 +83,12 @@ class ShortTermStrategy:
         contributions = {}
 
         # 2. Swing Trend Scoring (Long only for Cash Equity Delivery)
-        if trend == "BULLISH" and 48.0 <= rsi <= 72.0:
+        if trend == "BULLISH" and 42.0 <= rsi <= 76.0:
             direction = "BUY"
             score += 25.0
             contributions["trend_alignment"] = 25.0
 
-            if 52.0 <= rsi <= 65.0:
+            if 50.0 <= rsi <= 68.0:
                 score += 15.0
                 contributions["rsi_sweet_spot"] = 15.0
             else:
@@ -97,13 +97,13 @@ class ShortTermStrategy:
 
             # F&O Open Interest increase signals long buildup
             oi_change = features.get("oi_change_pct")
-            if oi_change is not None and oi_change > 1.0:
+            if oi_change is not None and oi_change > 0.5:
                 score += 10.0
                 contributions["oi_long_buildup"] = 10.0
 
-            # SL = 2.5x ATR, Target = 4.5x ATR (R:R = 1.8)
-            sl_raw = ltp - (2.5 * atr)
-            target_raw = ltp + (4.5 * atr)
+            # SL = 2.0x ATR, Target = 3.5x ATR (R:R = 1.75)
+            sl_raw = ltp - (2.0 * atr)
+            target_raw = ltp + (3.5 * atr)
 
         else:
             return None
@@ -117,12 +117,13 @@ class ShortTermStrategy:
         entry_rounded = QuantEngine.round_to_tick(ltp, tick_size)
 
         # 4. Geometry and Risk/Reward Validation
+        min_rr = getattr(config, "MIN_REWARD_TO_RISK", 1.3)
         is_valid, reject_reason, metrics = QuantEngine.validate_geometry(
             direction=direction,
             entry=entry_rounded,
             stop_loss=sl_rounded,
             target=target_rounded,
-            min_reward_to_risk=1.8
+            min_reward_to_risk=min_rr
         )
 
         if not is_valid:

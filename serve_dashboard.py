@@ -43,7 +43,16 @@ class DashboardHandler(SimpleHTTPRequestHandler):
             self.send_response(204)
             self.end_headers()
             return
-        super().do_GET()
+        try:
+            super().do_GET()
+        except (ConnectionResetError, ConnectionAbortedError, BrokenPipeError):
+            pass
+
+    def copyfile(self, source, outputfile):
+        try:
+            super().copyfile(source, outputfile)
+        except (ConnectionResetError, ConnectionAbortedError, BrokenPipeError):
+            pass
 
     def do_OPTIONS(self):
         self.send_response(200)
@@ -103,10 +112,18 @@ class DashboardHandler(SimpleHTTPRequestHandler):
             self.end_headers()
 
 
+class QuietHTTPServer(HTTPServer):
+    def handle_error(self, request, client_address):
+        exc_type, exc_val = sys.exc_info()[:2]
+        if exc_type in (ConnectionResetError, ConnectionAbortedError, BrokenPipeError):
+            return
+        super().handle_error(request, client_address)
+
+
 def run_server():
     server_address = ("", PORT)
     try:
-        httpd = HTTPServer(server_address, DashboardHandler)
+        httpd = QuietHTTPServer(server_address, DashboardHandler)
         log.info(f"FnOQuantAI Dashboard server running at http://localhost:{PORT}/index.html")
         webbrowser.open(f"http://localhost:{PORT}/index.html")
         httpd.serve_forever()

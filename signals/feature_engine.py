@@ -35,7 +35,8 @@ class FeatureEngine:
         if ltp <= 0:
             return {}
 
-        closes = [float(b.get("close") or b.get("close_price") or b.get("ltp") or b.get("last_price") or ltp) for b in history]
+        # Prioritize LTP / last_price over static previous day's close
+        closes = [float(b.get("ltp") or b.get("last_price") or b.get("close") or b.get("close_price") or ltp) for b in history]
         highs = [float(b.get("high") or b.get("high_price") or b.get("ltp") or b.get("last_price") or ltp) for b in history]
         lows = [float(b.get("low") or b.get("low_price") or b.get("ltp") or b.get("last_price") or ltp) for b in history]
 
@@ -55,9 +56,10 @@ class FeatureEngine:
         ema_fast = cls._calculate_ema(closes, fast_period)
         ema_slow = cls._calculate_ema(closes, slow_period)
 
-        if ema_fast > ema_slow * 1.0005:
+        # Enhanced trend sensitivity: 0.01% buffer (1.0001) instead of overly rigid 0.05%
+        if ema_fast > ema_slow * 1.0001:
             trend = "BULLISH"
-        elif ema_fast < ema_slow * 0.9995:
+        elif ema_fast < ema_slow * 0.9999:
             trend = "BEARISH"
         else:
             trend = "NEUTRAL"
@@ -69,9 +71,9 @@ class FeatureEngine:
         # 3. ATR (Average True Range)
         atr_period = min(14, max(3, n_bars - 2))
         atr_val = cls._calculate_atr(highs, lows, closes, atr_period)
-        # Fallback ATR if history is very short: 0.5% of LTP (minimum 0.05 NSE tick)
+        # Fallback ATR if history is very short: 0.3% of LTP (minimum 0.05 NSE tick)
         if atr_val <= 0:
-            atr_val = max(0.05, round(ltp * 0.005, 4))
+            atr_val = max(0.05, round(ltp * 0.003, 4))
 
         # 4. Momentum / Rate of Change
         lookback_roc = min(5, max(1, n_bars - 1))

@@ -1,4 +1,4 @@
-﻿"""
+"""
 ================================================================================
 FnOQuantAI: Central System Configuration
 ================================================================================
@@ -41,8 +41,8 @@ SIGNAL_WORKER_INTERVAL_SECONDS: int = int(os.getenv("FO_SIGNAL_INTERVAL", "300")
 OPEN_CALL_WORKER_INTERVAL_SECONDS: int = int(os.getenv("FO_MONITOR_INTERVAL", "60"))   # 1 min
 
 # 4. Strategy & Portfolio Limits
-MIN_SIGNAL_SCORE: float = float(os.getenv("MIN_SIGNAL_SCORE", "65.0"))
-MIN_REWARD_TO_RISK: float = float(os.getenv("MIN_REWARD_TO_RISK", "1.5"))
+MIN_SIGNAL_SCORE: float = float(os.getenv("MIN_SIGNAL_SCORE", "55.0"))
+MIN_REWARD_TO_RISK: float = float(os.getenv("MIN_REWARD_TO_RISK", "1.3"))
 
 MAX_SIGNALS_INTRADAY: int = int(os.getenv("MAX_SIGNALS_INTRADAY", "3"))
 MAX_SIGNALS_SHORT_TERM: int = int(os.getenv("MAX_SIGNALS_SHORT_TERM", "3"))
@@ -61,9 +61,9 @@ SHARE_TYPE_BUY: str = os.getenv("FO_SHARE_TYPE_BUY", "Normal")
 SHARE_TYPE_SELL: str = os.getenv("FO_SHARE_TYPE_SELL", "MIS")
 
 # Price Deviation Safeguard (Slippage protection before order dispatch)
-MAX_PRICE_DEVIATION_TICKS: int = int(os.getenv("MAX_PRICE_DEVIATION_TICKS", "5"))
-MAX_PRICE_DEVIATION_PERCENT: float = float(os.getenv("MAX_PRICE_DEVIATION_PERCENT", "0.25")) # 0.25%
-MAX_QUOTE_AGE_SECONDS: int = int(os.getenv("MAX_QUOTE_AGE_SECONDS", "360"))
+MAX_PRICE_DEVIATION_TICKS: int = int(os.getenv("MAX_PRICE_DEVIATION_TICKS", "20"))
+MAX_PRICE_DEVIATION_PERCENT: float = float(os.getenv("MAX_PRICE_DEVIATION_PERCENT", "0.35")) # 0.35%
+MAX_QUOTE_AGE_SECONDS: int = int(os.getenv("MAX_QUOTE_AGE_SECONDS", "600")) # 10 min freshness tolerance
 
 # 6. Database Connection Paths
 COMMON_POSTGRE_READ_FILE = os.path.join(COMMON_MODULE_DIR, ".postgre_read")

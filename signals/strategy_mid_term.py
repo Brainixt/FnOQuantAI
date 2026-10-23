@@ -63,8 +63,9 @@ class MidTermStrategy:
             else:
                 expiry_date = None
 
-            if expiry_date and (expiry_date - today).days <= 7:
-                log.debug(f"[{cls.CATEGORY}] Rejected {latest_snapshot.get('symbol')}: Expiry {expiry_date} is too close (<= 7 days).")
+            cutoff_days = getattr(config, "EXPIRY_CUTOFF_DAYS_MID_TERM", 7)
+            if expiry_date and (expiry_date - today).days <= cutoff_days:
+                log.debug(f"[{cls.CATEGORY}] Rejected {latest_snapshot.get('symbol')}: Expiry {expiry_date} is within {cutoff_days} days (rollover risk).")
                 return None
 
         # 1. Extract Features
@@ -84,12 +85,12 @@ class MidTermStrategy:
         contributions = {}
 
         # 2. Macro Trend Scoring (Long only for Cash Equity Delivery)
-        if trend == "BULLISH" and 50.0 <= rsi <= 70.0 and roc > 0:
+        if trend == "BULLISH" and 40.0 <= rsi <= 76.0 and roc >= -0.10:
             direction = "BUY"
             score += 25.0
             contributions["macro_trend"] = 25.0
 
-            if 54.0 <= rsi <= 64.0:
+            if 48.0 <= rsi <= 68.0:
                 score += 15.0
                 contributions["stable_momentum"] = 15.0
             else:
@@ -98,13 +99,13 @@ class MidTermStrategy:
 
             # F&O Open Interest sustained buildup confirmation
             oi_change = features.get("oi_change_pct")
-            if oi_change is not None and oi_change > 2.0:
+            if oi_change is not None and oi_change > 1.0:
                 score += 10.0
                 contributions["oi_macro_buildup"] = 10.0
 
-            # SL = 4.0x ATR, Target = 8.0x ATR (R:R = 2.0)
-            sl_raw = ltp - (4.0 * atr)
-            target_raw = ltp + (8.0 * atr)
+            # SL = 3.0x ATR, Target = 6.0x ATR (R:R = 2.0)
+            sl_raw = ltp - (3.0 * atr)
+            target_raw = ltp + (6.0 * atr)
 
         else:
             return None
@@ -118,12 +119,13 @@ class MidTermStrategy:
         entry_rounded = QuantEngine.round_to_tick(ltp, tick_size)
 
         # 4. Geometry and Risk/Reward Validation
+        min_rr = getattr(config, "MIN_REWARD_TO_RISK", 1.3)
         is_valid, reject_reason, metrics = QuantEngine.validate_geometry(
             direction=direction,
             entry=entry_rounded,
             stop_loss=sl_rounded,
             target=target_rounded,
-            min_reward_to_risk=2.0
+            min_reward_to_risk=min_rr
         )
 
         if not is_valid:

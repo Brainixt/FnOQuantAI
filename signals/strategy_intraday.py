@@ -77,19 +77,19 @@ class IntradayStrategy:
         contributions = {}
 
         # 3. Directional Scoring Logic
-        if trend == "BULLISH" and 50.0 <= rsi <= 76.0 and roc > 0:
+        if trend == "BULLISH" and 45.0 <= rsi <= 78.0 and roc >= -0.05:
             direction = "BUY"
             score += 20.0  # Trend confirmation
             contributions["trend"] = 20.0
 
-            if 55.0 <= rsi <= 68.0:
+            if 52.0 <= rsi <= 70.0:
                 score += 15.0  # Optimal momentum band
                 contributions["rsi_momentum"] = 15.0
             else:
                 score += 8.0
                 contributions["rsi_momentum"] = 8.0
 
-            if roc > 0.15:
+            if roc > 0.05:
                 score += 10.0
                 contributions["roc_strength"] = 10.0
 
@@ -97,19 +97,19 @@ class IntradayStrategy:
             sl_raw = ltp - (1.5 * atr)
             target_raw = ltp + (2.5 * atr)
 
-        elif trend == "BEARISH" and 24.0 <= rsi <= 50.0 and roc < 0:
+        elif trend == "BEARISH" and 22.0 <= rsi <= 55.0 and roc <= 0.05:
             direction = "SELL"
             score += 20.0
             contributions["trend"] = 20.0
 
-            if 32.0 <= rsi <= 45.0:
+            if 30.0 <= rsi <= 48.0:
                 score += 15.0
                 contributions["rsi_momentum"] = 15.0
             else:
                 score += 8.0
                 contributions["rsi_momentum"] = 8.0
 
-            if roc < -0.15:
+            if roc < -0.05:
                 score += 10.0
                 contributions["roc_strength"] = 10.0
 

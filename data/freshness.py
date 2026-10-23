@@ -80,7 +80,7 @@ class ObservationValidator:
                 pass
 
         # Age / Freshness Evaluation
-        max_age = max_age_seconds or getattr(config, "MAX_QUOTE_AGE_SECONDS", 360)
+        max_age = max_age_seconds or getattr(config, "MAX_QUOTE_AGE_SECONDS", 600)
         now_dt = current_dt or datetime.now(timezone.utc)
         if now_dt.tzinfo is None:
             now_dt = now_dt.replace(tzinfo=timezone.utc)
@@ -100,9 +100,17 @@ class ObservationValidator:
             return False, f"Unsupported timestamp type: {type(ts_val)}"
 
         if dt_obj.tzinfo is None:
-            dt_obj = dt_obj.replace(tzinfo=timezone.utc)
+            dt_utc = dt_obj.replace(tzinfo=IST).astimezone(timezone.utc)
+        elif dt_obj.tzinfo != timezone.utc:
+            dt_utc = dt_obj.astimezone(timezone.utc)
+        else:
+            dt_utc = dt_obj
 
-        age_seconds = (now_dt - dt_obj).total_seconds()
+        # Handle database artifact where local IST time was inserted into a UTC/GMT column
+        if (now_dt - dt_utc).total_seconds() < -18000:
+            dt_utc = dt_utc - timedelta(hours=5, minutes=30)
+
+        age_seconds = (now_dt - dt_utc).total_seconds()
         if age_seconds < -120:
             return False, f"Future timestamp detected for {symbol} (skew: {age_seconds:.1f}s)"
 

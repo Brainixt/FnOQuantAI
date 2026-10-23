@@ -515,17 +515,25 @@
     /* Market Cards Grid */
     .market-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-      gap: 16px;
-      padding: 20px;
+      grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+      gap: 12px;
+      padding: 16px;
     }
 
     .market-card {
       background: rgba(15, 23, 42, 0.5);
       border: 1px solid var(--border-color);
       border-radius: var(--radius-md);
-      padding: 16px;
+      padding: 12px 14px;
       transition: all 0.2s ease;
+    }
+
+    .card-up {
+      border-left: 3px solid var(--accent-green) !important;
+    }
+
+    .card-down {
+      border-left: 3px solid var(--accent-red) !important;
     }
 
     .market-card:hover {
@@ -537,27 +545,101 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 10px;
+      margin-bottom: 6px;
     }
 
     .commodity-name {
       font-weight: 700;
-      font-size: 15px;
+      font-size: 14px;
       color: var(--text-main);
     }
 
     .commodity-price {
-      font-size: 22px;
+      font-size: 20px;
       font-weight: 800;
-      margin-bottom: 6px;
+      margin-bottom: 4px;
     }
 
     .market-card-row {
       display: flex;
       justify-content: space-between;
-      font-size: 12px;
+      font-size: 11px;
       color: var(--text-sub);
-      padding-top: 4px;
+      padding-top: 2px;
+    }
+
+    /* Market Table & Quant Scoring Styles */
+    .quant-score-cell {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .quant-score-val {
+      font-weight: 800;
+      font-size: 13px;
+      min-width: 36px;
+    }
+    .score-bar-bg {
+      flex: 1;
+      height: 6px;
+      max-width: 65px;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 3px;
+      overflow: hidden;
+      position: relative;
+    }
+    .score-bar-fill {
+      height: 100%;
+      border-radius: 3px;
+      transition: width 0.3s ease;
+    }
+    .range-bar-box {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      min-width: 125px;
+    }
+    .range-bar-track {
+      height: 4px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 2px;
+      position: relative;
+    }
+    .range-bar-pos {
+      position: absolute;
+      top: -3px;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #38bdf8;
+      border: 2px solid #0f172a;
+      transform: translateX(-50%);
+    }
+    .th-sortable {
+      cursor: pointer;
+      user-select: none;
+      transition: color 0.15s ease;
+    }
+    .th-sortable:hover {
+      color: var(--accent-cyan);
+    }
+    .sort-indicator {
+      display: inline-block;
+      margin-left: 4px;
+      font-size: 11px;
+      color: var(--accent-cyan);
+    }
+    .badge-strong-buy {
+      background: rgba(16, 185, 129, 0.22);
+      color: #34d399;
+      border: 1px solid rgba(52, 211, 153, 0.45);
+      box-shadow: 0 0 8px rgba(16, 185, 129, 0.2);
+    }
+    .badge-strong-sell {
+      background: rgba(239, 68, 68, 0.22);
+      color: #f87171;
+      border: 1px solid rgba(248, 113, 113, 0.45);
+      box-shadow: 0 0 8px rgba(239, 68, 68, 0.2);
     }
 
     /* Empty state */
@@ -661,6 +743,44 @@
         align-items: flex-start;
         gap: 14px;
       }
+    /* Market Status Banner */
+    .market-status-banner {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 13px 20px;
+      border-radius: var(--radius-md);
+      margin-bottom: 22px;
+      font-size: 13px;
+      line-height: 1.5;
+      box-shadow: var(--shadow-sm);
+    }
+    .banner-live {
+      background: rgba(16, 185, 129, 0.12);
+      border: 1px solid rgba(16, 185, 129, 0.35);
+      color: #a7f3d0;
+    }
+    .banner-closed {
+      background: rgba(56, 189, 248, 0.09);
+      border: 1px solid rgba(56, 189, 248, 0.28);
+      color: #bae6fd;
+    }
+    .banner-icon {
+      font-size: 22px;
+      flex-shrink: 0;
+    }
+    .banner-body {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .banner-body strong {
+      font-size: 13px;
+      letter-spacing: 0.02em;
+    }
+    .banner-body span {
+      font-size: 12px;
+      opacity: 0.9;
     }
   </style>
 </head>
@@ -670,7 +790,7 @@
     <!-- Top Header -->
     <header>
       <div class="brand-wrap">
-        <div class="logo-badge">CQ</div>
+        <div class="logo-badge">FQ</div>
         <div class="brand-text">
           <h1>FnOQuantAI <span class="brand-tag">Terminal</span></h1>
           <div class="brand-sub">Independent NSE Quantitative Predictions & Trade Outcome Telemetry</div>
@@ -704,6 +824,15 @@
         </button>
       </div>
     </header>
+
+    <!-- Market Status Banner -->
+    <div id="marketStatusBanner" class="market-status-banner banner-closed">
+      <div class="banner-icon">🌙</div>
+      <div class="banner-body">
+        <strong>NSE Equity Market Status: Initializing...</strong>
+        <span>Loading latest market cycle data and quantitative models...</span>
+      </div>
+    </div>
 
     <!-- Key Metrics Cards -->
     <div class="metrics-grid">
@@ -928,14 +1057,39 @@
       </div>
     </div>
 
-    <!-- TAB 4: NSE MARKET WATCH -->
+    <!-- TAB 4: NSE MARKET WATCH & QUANT SCORING -->
     <div class="content-box tab-pane" id="paneMarket" style="display: none;">
       <div class="toolbar">
-        <span style="font-weight: 600; font-size: 13px;">Live Ingested NSE Equity Snapshots from Read-Only Database</span>
-        <span class="font-mono" style="font-size: 12px; color: var(--text-sub);" id="marketSnapshotTime">Updated: --</span>
+        <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+          <span style="font-weight: 700; font-size: 13px; color: var(--text-main);">NSE Market Watch & Quant Scoring</span>
+          <span class="badge status-time font-mono" id="cntMarketBadge">0 Instruments</span>
+          <span class="font-mono" style="font-size: 12px; color: var(--text-sub);" id="marketSnapshotTime">Updated: --</span>
+        </div>
+        <div class="filter-group">
+          <input type="text" class="search-input" id="searchMarket" placeholder="Filter symbol (e.g. RELIANCE)..." oninput="handleMarketSearch(this.value)">
+        </div>
       </div>
-      <div class="market-grid" id="marketCardsGrid">
-        <!-- Rendered dynamically -->
+      <div class="table-responsive">
+        <table>
+          <thead>
+            <tr>
+              <th style="width: 44px; text-align: center;">#</th>
+              <th class="th-sortable" onclick="setMarketSort('symbol')">Symbol <span class="sort-indicator" id="sort-symbol"></span></th>
+              <th class="th-sortable" onclick="setMarketSort('quantScore')" style="min-width: 140px;">Quant Score <span class="sort-indicator" id="sort-quantScore">▼</span></th>
+              <th style="min-width: 110px;">Position / Stance</th>
+              <th class="th-sortable" onclick="setMarketSort('ltp')" style="text-align: right;">LTP (₹) <span class="sort-indicator" id="sort-ltp"></span></th>
+              <th class="th-sortable" onclick="setMarketSort('change')" style="text-align: right;">Chg (₹) <span class="sort-indicator" id="sort-change"></span></th>
+              <th class="th-sortable" onclick="setMarketSort('per_change')" style="text-align: right;">% Chg <span class="sort-indicator" id="sort-per_change"></span></th>
+              <th style="min-width: 130px;">Session Range (L - H)</th>
+              <th style="text-align: right;">Prev Close</th>
+              <th class="th-sortable" onclick="setMarketSort('volume')" style="text-align: right;">Volume <span class="sort-indicator" id="sort-volume"></span></th>
+              <th style="text-align: right;">Open Interest</th>
+            </tr>
+          </thead>
+          <tbody id="tbodyMarket">
+            <!-- Rendered dynamically -->
+          </tbody>
+        </table>
       </div>
     </div>
 
@@ -994,14 +1148,16 @@
       autoRefreshTimer: null
     };
 
+    let hasUserSwitchedTab = false;
+
     async function queryDatabase(sql) {
-      // 1. Attempt direct Neon Serverless SQL query
+      // 1. Attempt direct Neon Serverless SQL query over HTTPS
       try {
         const resp = await fetch(config.endpoint, {
           method: "POST",
           headers: {
             "Neon-Connection-String": config.connectionString,
-            "Content-Type": "application/json"
+            "Content-Type": "text/plain" // Prevents CORS preflight rejection from Neon
           },
           body: JSON.stringify({ query: sql })
         });
@@ -1009,28 +1165,33 @@
         if (resp.ok) {
           const data = await resp.json();
           return data.rows || [];
+        } else {
+          console.warn("Neon direct query non-OK status:", resp.status);
         }
       } catch (directErr) {
-        console.warn("Direct fetch blocked (file:// security model), using local proxy fallback:", directErr);
+        console.warn("Direct fetch error:", directErr);
       }
 
-      // 2. Resilient Fallback: Local Server Query Proxy
-      const fallbackUrl = (window.location.protocol.startsWith("http"))
-        ? "/api/query"
-        : "http://localhost:8001/api/query";
+      // 2. Resilient Fallback: Local Server Query Proxy (when running locally)
+      try {
+        const isLocalHost = (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1");
+        const fallbackUrl = isLocalHost ? "/api/query" : "http://localhost:8001/api/query";
 
-      const fallbackResp = await fetch(fallbackUrl, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ query: sql })
-      });
+        const fallbackResp = await fetch(fallbackUrl, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ query: sql })
+        });
 
-      if (!fallbackResp.ok) {
-        throw new Error("Database query failed on direct & proxy fallback");
+        if (fallbackResp.ok) {
+          const fallbackData = await fallbackResp.json();
+          return fallbackData.rows || [];
+        }
+      } catch (proxyErr) {
+        console.warn("Local proxy query fallback failed:", proxyErr);
       }
 
-      const fallbackData = await fallbackResp.json();
-      return fallbackData.rows || [];
+      throw new Error("Database query failed on both direct Neon HTTPS and proxy fallback");
     }
 
     async function fetchAllData() {
@@ -1067,7 +1228,7 @@
         `;
 
         const sqlSnapshots = `
-          SELECT cycle_id, symbol, trading_symbol, ltp, high, low, close, open, volume, open_interest, retrieved_at
+          SELECT cycle_id, symbol, trading_symbol, ltp, previous_close, change, per_change, high, low, close, open, volume, open_interest, retrieved_at
           FROM market_equity_snapshots
           WHERE cycle_id = (SELECT cycle_id FROM market_equity_snapshots ORDER BY retrieved_at DESC LIMIT 1)
           ORDER BY symbol ASC;
@@ -1102,26 +1263,76 @@
         pulse.classList.remove("error");
         statusText.textContent = "Live Connected";
 
+        updateMarketStatus();
         renderMetrics();
         renderSignalsTable();
         renderActiveTradesTable();
         renderResultsTable();
-        renderMarketGrid();
-        
+        renderMarketTable();
+
+        // Intelligent tab activation: If 0 signals yet, show market table automatically
+        if (!hasUserSwitchedTab) {
+          if (state.signals.length === 0 && state.snapshots.length > 0) {
+            switchTab('market', false);
+          } else {
+            switchTab('predictions', false);
+          }
+        }
 
       } catch (err) {
         console.error("Database query failed:", err);
         pulse.classList.add("error");
         statusText.textContent = "Sync Error";
+        updateMarketStatus();
       } finally {
         if (icon) icon.classList.remove("spin");
       }
     }
 
-    
+    function updateMarketStatus() {
+      const banner = document.getElementById("marketStatusBanner");
+      if (!banner) return;
+
+      const now = new Date();
+      // IST is UTC + 5h30m
+      const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
+      const istDate = new Date(utc + (3600000 * 5.5));
+      const istHours = istDate.getHours();
+      const istMinutes = istDate.getMinutes();
+      const istDay = istDate.getDay(); // 0 is Sun, 6 is Sat
+      const isWeekend = (istDay === 0 || istDay === 6);
+      const timeInDec = istHours + (istMinutes / 60);
+
+      const isMarketHours = !isWeekend && (timeInDec >= 9.25 && timeInDec <= 15.5); // 09:15 to 15:30 IST
+
+      const snapCount = state.snapshots ? state.snapshots.length : 0;
+      const lastCycle = state.latestCycle || "---";
+      const lastTimeStr = state.snapshots && state.snapshots[0] ? formatISTTime(state.snapshots[0].retrieved_at, lastCycle) : "--:--";
+
+      if (isMarketHours) {
+        banner.className = "market-status-banner banner-live";
+        banner.innerHTML = `
+          <div class="banner-icon">🟢</div>
+          <div class="banner-body">
+            <strong>NSE Equity Market is OPEN (Live Trading Hours)</strong>
+            <span>Active quantitative scanning and signal generation running every 5 minutes across ${snapCount} instruments. Real-time telemetry updating.</span>
+          </div>
+        `;
+      } else {
+        banner.className = "market-status-banner banner-closed";
+        banner.innerHTML = `
+          <div class="banner-icon">🌙</div>
+          <div class="banner-body">
+            <strong>NSE Equity Market is CLOSED (Pre-Market / After-Hours) • Trading Hours: 09:15 – 15:30 IST Mon–Fri</strong>
+            <span>Displaying the latest market snapshot (${snapCount} instruments from cycle ${lastCycle} at ${lastTimeStr} IST). New quantitative signals and automated executions generate automatically when the market opens at 09:15 IST.</span>
+          </div>
+        `;
+      }
+    }
+
     function parseServerTimestamp(str) {
       if (!str) return null;
-      if (typeof str === 'string' && str.startsWith('COM_')) {
+      if (typeof str === 'string' && (str.startsWith('COM_') || str.startsWith('EQU_'))) {
         const parts = str.split('_');
         if (parts.length >= 3 && parts[1].length === 8 && parts[2].length === 6) {
           const y = parseInt(parts[1].slice(0, 4), 10);
@@ -1134,31 +1345,28 @@
         }
       }
       if (typeof str === 'string') {
-        const clean = str.replace('T', ' ').replace(/(\+00(:00)?|Z)$/, '').trim();
-        const parts = clean.split(' ');
-        if (parts.length >= 2) {
-          const [y, m, d] = parts[0].split('-').map(Number);
-          const [hh, mm, ss] = parts[1].split(':').map(Number);
-          return new Date(y, m - 1, d, hh, mm, Math.floor(ss || 0));
-        }
+        let clean = str.replace(' ', 'T');
+        if (clean.endsWith('+00')) clean += ':00';
+        const d = new Date(clean);
+        if (!isNaN(d.getTime())) return d;
       }
       return new Date(str);
     }
 
     function formatISTTime(raw, cycleId) {
-      if (cycleId && cycleId.startsWith('COM_')) {
+      if (cycleId && (cycleId.startsWith('COM_') || cycleId.startsWith('EQU_'))) {
         const d = parseServerTimestamp(cycleId);
         if (d && !isNaN(d.getTime())) return d.toLocaleTimeString('en-IN');
       }
       const d = parseServerTimestamp(raw);
       if (!d || isNaN(d.getTime())) return '--';
-      return d.toLocaleTimeString('en-IN');
+      return d.toLocaleTimeString('en-IN', { timeZone: 'Asia/Kolkata' });
     }
 
     function formatISTDateTime(raw) {
       const d = parseServerTimestamp(raw);
       if (!d || isNaN(d.getTime())) return '--';
-      return `${d.toLocaleDateString('en-IN')} ${d.toLocaleTimeString('en-IN')}`;
+      return `${d.toLocaleDateString('en-IN', { timeZone: 'Asia/Kolkata' })} ${d.toLocaleTimeString('en-IN', { timeZone: 'Asia/Kolkata' })}`;
     }
 
     function renderMetrics() {
@@ -1374,35 +1582,259 @@
       }).join("");
     }
 
-    function renderMarketGrid() {
-      const container = document.getElementById("marketCardsGrid");
-      if (state.snapshots.length === 0) {
-        container.innerHTML = '<div class="empty-state" style="grid-column: 1 / -1;"><div class="empty-icon">📈</div><div class="empty-title">No Snapshot Data Available</div></div>';
+    let marketSortField = 'quantScore';
+    let marketSortAsc = false;
+    let marketSearchQuery = '';
+
+    function handleMarketSearch(val) {
+      marketSearchQuery = (val || '').trim().toUpperCase();
+      renderMarketTable();
+    }
+
+    function setMarketSort(field) {
+      if (marketSortField === field) {
+        marketSortAsc = !marketSortAsc;
+      } else {
+        marketSortField = field;
+        marketSortAsc = (field === 'symbol');
+      }
+      renderMarketTable();
+    }
+
+    function formatVolume(val) {
+      const v = parseFloat(val || 0);
+      if (!v || v === 0) return '-';
+      if (v >= 10000000) return (v / 10000000).toFixed(2) + ' Cr';
+      if (v >= 100000) return (v / 100000).toFixed(2) + ' L';
+      if (v >= 1000) return (v / 1000).toFixed(1) + ' k';
+      return v.toLocaleString('en-IN');
+    }
+
+    function calculateShareQuantMetrics(s, activeSignals) {
+      const ltp = parseFloat(s.ltp || 0.0);
+      const high = parseFloat(s.high || 0.0);
+      const low = parseFloat(s.low || 0.0);
+      const open = parseFloat(s.open || 0.0);
+      const prev = parseFloat(s.previous_close || 0.0);
+      let chg = parseFloat(s.change);
+      let perChg = parseFloat(s.per_change);
+
+      if (isNaN(chg) && ltp > 0 && prev > 0) {
+        chg = ltp - prev;
+      }
+      if (isNaN(perChg) && !isNaN(chg) && prev > 0) {
+        perChg = (chg / prev) * 100.0;
+      }
+      if (isNaN(chg)) chg = 0.0;
+      if (isNaN(perChg)) perChg = 0.0;
+
+      // Check if there is an active trade signal for this symbol
+      const matchingSig = (activeSignals || []).find(sig => sig.symbol === s.symbol);
+      let score = 50.0;
+      let hasActiveSignal = false;
+      let signalDir = null;
+
+      if (matchingSig && matchingSig.total_score != null) {
+        score = parseFloat(matchingSig.total_score);
+        hasActiveSignal = true;
+        signalDir = matchingSig.direction;
+      } else {
+        // Multi-factor Quant Scoring Engine
+        // 1. Session Momentum vs Yesterday's close (up to +/-24 pts)
+        const momentumScore = Math.max(-24, Math.min(24, perChg * 4.5));
+
+        // 2. Intraday Trend vs Day's Open (up to +/-12 pts)
+        let intraScore = 0;
+        if (open > 0 && ltp > 0) {
+          const intraPct = ((ltp - open) / open) * 100.0;
+          intraScore = Math.max(-12, Math.min(12, intraPct * 3.0));
+        }
+
+        // 3. Session Range Location (Stochastic oscillator: position between Low and High, up to +/-10 pts)
+        let rangeScore = 0;
+        if (high > low && high > 0) {
+          const pos = (ltp - low) / (high - low);
+          rangeScore = (pos - 0.5) * 20.0;
+        }
+
+        // 4. Volume activity kicker (+/-2 pts)
+        const vol = parseFloat(s.volume || 0);
+        let volScore = 0;
+        if (vol > 0) {
+          volScore = chg >= 0 ? 2.0 : -2.0;
+        }
+
+        score = 50.0 + momentumScore + intraScore + rangeScore + volScore;
+        score = Math.max(5.0, Math.min(95.0, score));
+      }
+
+      // Positional Stance Determination
+      let stance = 'NEUTRAL';
+      let stanceBadgeClass = 'badge status-time';
+      if (score >= 75.0) {
+        stance = 'STRONG BUY';
+        stanceBadgeClass = 'badge badge-strong-buy';
+      } else if (score >= 60.0) {
+        stance = 'BUY';
+        stanceBadgeClass = 'badge badge-buy';
+      } else if (score <= 25.0) {
+        stance = 'STRONG SELL';
+        stanceBadgeClass = 'badge badge-strong-sell';
+      } else if (score <= 40.0) {
+        stance = 'SELL';
+        stanceBadgeClass = 'badge badge-sell';
+      } else {
+        stance = 'NEUTRAL';
+        stanceBadgeClass = 'badge status-time';
+      }
+
+      return {
+        ltp,
+        high,
+        low,
+        open,
+        prev,
+        chg,
+        perChg,
+        score: Math.round(score * 10) / 10,
+        stance,
+        stanceBadgeClass,
+        hasActiveSignal,
+        signalDir,
+        volume: parseFloat(s.volume || 0),
+        openInterest: parseFloat(s.open_interest || 0)
+      };
+    }
+
+    function renderMarketTable() {
+      const tbody = document.getElementById("tbodyMarket");
+      if (!tbody) return;
+
+      // Update sort indicators
+      ['symbol', 'quantScore', 'ltp', 'change', 'per_change', 'volume'].forEach(f => {
+        const el = document.getElementById('sort-' + f);
+        if (el) {
+          if (marketSortField === f) {
+            el.textContent = marketSortAsc ? '▲' : '▼';
+            el.style.opacity = '1';
+          } else {
+            el.textContent = '';
+            el.style.opacity = '0.3';
+          }
+        }
+      });
+
+      if (!state.snapshots || state.snapshots.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="11"><div class="empty-state"><div class="empty-icon">📈</div><div class="empty-title">No Snapshot Data Available</div></div></td></tr>';
+        document.getElementById("cntMarketBadge").textContent = "0 Instruments";
         return;
       }
 
-      container.innerHTML = state.snapshots.map(s => {
-        const ltp = parseFloat(s.ltp || 0.0);
-        const high = parseFloat(s.high || 0.0);
-        const low = parseFloat(s.low || 0.0);
-        const dt = new Date(s.retrieved_at);
+      // Map rows with metrics
+      let rows = state.snapshots.map(s => {
+        const m = calculateShareQuantMetrics(s, state.signals);
+        return { s, m };
+      });
+
+      // Filter
+      if (marketSearchQuery) {
+        rows = rows.filter(r => (r.s.symbol || '').toUpperCase().includes(marketSearchQuery) || (r.s.trading_symbol || '').toUpperCase().includes(marketSearchQuery));
+      }
+
+      document.getElementById("cntMarketBadge").textContent = `${rows.length} of ${state.snapshots.length} Instruments`;
+
+      // Sort
+      rows.sort((a, b) => {
+        let valA, valB;
+        if (marketSortField === 'quantScore') {
+          valA = a.m.score;
+          valB = b.m.score;
+        } else if (marketSortField === 'symbol') {
+          return marketSortAsc ? a.s.symbol.localeCompare(b.s.symbol) : b.s.symbol.localeCompare(a.s.symbol);
+        } else if (marketSortField === 'ltp') {
+          valA = a.m.ltp;
+          valB = b.m.ltp;
+        } else if (marketSortField === 'change') {
+          valA = a.m.chg;
+          valB = b.m.chg;
+        } else if (marketSortField === 'per_change') {
+          valA = a.m.perChg;
+          valB = b.m.perChg;
+        } else if (marketSortField === 'volume') {
+          valA = a.m.volume;
+          valB = b.m.volume;
+        } else {
+          valA = a.m.score;
+          valB = b.m.score;
+        }
+        return marketSortAsc ? (valA - valB) : (valB - valA);
+      });
+
+      if (rows.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="11"><div class="empty-state"><div class="empty-icon">🔍</div><div class="empty-title">No matching instruments found</div></div></td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = rows.map((r, idx) => {
+        const m = r.m;
+        const isUp = m.chg > 0;
+        const isDown = m.chg < 0;
+        const chgColor = isUp ? 'text-green' : (isDown ? 'text-red' : '');
+        const chgSign = isUp ? '+' : (isDown ? '-' : '');
+        const chgRupee = `${chgSign}₹${Math.abs(m.chg).toFixed(2)}`;
+        const perChgIcon = isUp ? '▲ +' : (isDown ? '▼ -' : '• ');
+        const perChgBadgeClass = isUp ? 'badge-buy' : (isDown ? 'badge-sell' : 'status-time');
+
+        // Range position percentage
+        let rangePosPct = 50;
+        if (m.high > m.low && m.high > 0) {
+          rangePosPct = Math.max(0, Math.min(100, ((m.ltp - m.low) / (m.high - m.low)) * 100));
+        }
+
+        // Score bar styling
+        const scoreColor = m.score >= 60 ? 'var(--accent-green)' : (m.score <= 40 ? 'var(--accent-red)' : 'var(--accent-cyan)');
 
         return `
-          <div class="market-card">
-            <div class="market-card-top">
-              <span class="commodity-name">${s.symbol}</span>
-              <span class="badge badge-status status-active">NSE</span>
-            </div>
-            <div class="commodity-price font-mono">${ltp.toLocaleString("en-IN", { minimumFractionDigits: 2 })}</div>
-            <div class="market-card-row font-mono">
-              <span>High: ${high > 0 ? high.toFixed(2) : '-'}</span>
-              <span>Low: ${low > 0 ? low.toFixed(2) : '-'}</span>
-            </div>
-            <div class="market-card-row font-mono" style="margin-top: 6px; font-size: 11px; color: var(--text-sub);">
-              <span>Cycle: ${s.cycle_id}</span>
-              <span>${formatISTTime(s.retrieved_at, s.cycle_id)}</span>
-            </div>
-          </div>
+          <tr>
+            <td class="font-mono" style="text-align: center; font-size: 11px; color: var(--text-sub);">${idx + 1}</td>
+            <td>
+              <div style="display: flex; align-items: center; gap: 6px;">
+                <span style="font-weight: 700; font-size: 13px; color: var(--text-main);">${r.s.symbol}</span>
+                <span class="badge" style="font-size: 9px; padding: 1px 5px; background: rgba(56, 189, 248, 0.12); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.3);">NSE</span>
+                ${m.hasActiveSignal ? `<span class="badge ${m.signalDir === 'BUY' ? 'badge-buy' : 'badge-sell'}" style="font-size: 9px; padding: 1px 4px;">SIGNAL</span>` : ''}
+              </div>
+            </td>
+            <td>
+              <div class="quant-score-cell">
+                <span class="font-mono quant-score-val" style="color: ${scoreColor};">${m.score.toFixed(1)}</span>
+                <div class="score-bar-bg">
+                  <div class="score-bar-fill" style="width: ${m.score}%; background: ${scoreColor};"></div>
+                </div>
+              </div>
+            </td>
+            <td><span class="${m.stanceBadgeClass}">${m.stance}</span></td>
+            <td class="font-mono" style="text-align: right; font-weight: 700; font-size: 13px;">₹ ${m.ltp.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+            <td class="font-mono ${chgColor}" style="text-align: right; font-weight: 600;">${chgRupee}</td>
+            <td style="text-align: right;">
+              <span class="badge ${perChgBadgeClass}" style="font-size: 11px; font-weight: 700; padding: 2px 7px;">
+                ${perChgIcon}${Math.abs(m.perChg).toFixed(2)}%
+              </span>
+            </td>
+            <td>
+              <div class="range-bar-box font-mono" style="font-size: 10px;">
+                <div style="display: flex; justify-content: space-between; color: var(--text-sub);">
+                  <span>${m.low > 0 ? m.low.toFixed(1) : '-'}</span>
+                  <span>${m.high > 0 ? m.high.toFixed(1) : '-'}</span>
+                </div>
+                <div class="range-bar-track">
+                  <div class="range-bar-pos" style="left: ${rangePosPct}%;"></div>
+                </div>
+              </div>
+            </td>
+            <td class="font-mono" style="text-align: right; color: var(--text-sub);">${m.prev > 0 ? '₹ ' + m.prev.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '-'}</td>
+            <td class="font-mono" style="text-align: right; color: var(--text-muted);">${formatVolume(m.volume)}</td>
+            <td class="font-mono" style="text-align: right; color: var(--text-sub);">${formatVolume(m.openInterest)}</td>
+          </tr>
         `;
       }).join("");
     }
@@ -1443,7 +1875,8 @@
       }).join("");
     }
 
-    function switchTab(tabId) {
+    function switchTab(tabId, isUserClick = true) {
+      if (isUserClick) hasUserSwitchedTab = true;
       document.querySelectorAll(".tab-pane").forEach(el => el.style.display = "none");
       document.querySelectorAll(".tab-btn").forEach(el => el.classList.remove("active"));
 
